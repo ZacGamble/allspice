@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using allspice.Models;
 using allspice.Repositories;
 
 namespace allspice.Services
@@ -13,9 +11,7 @@ namespace allspice.Services
             _repo = repo;
         }
 
-        internal List<Ingredient> Get()
-        {
-            return _repo.Get();
-        }
+        // internal List<Ingredient> Get()
+
     }
 }

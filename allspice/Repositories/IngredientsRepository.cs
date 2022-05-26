@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using allspice.Models;
 using System.Data;
 
 namespace allspice.Repositories
@@ -11,8 +9,6 @@ namespace allspice.Repositories
         {
             _db = db;
         }
-        internal List<Ingredient> Get()
-        {
-        }
+
     }
 }

@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using allspice.Services;
-using allspice.Models;
-using System.Collections.Generic;
 
 namespace allspice.Controllers
 {
@@ -16,19 +14,19 @@ namespace allspice.Controllers
             _ingServ = ingServ;
         }
         // GET
-        [HttpGet]
-        public ActionResult<List<Ingredient>> Get()
-        {
-            try
-            {
-                List<Ingredient> ingredients = _ingServ.Get();
-                return Ok(ingredients);
-            }
-            catch (System.Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        // [HttpGet("{recipeId}")]
+        // public ActionResult<List<Ingredient>> Get(int recipeId)
+        // {
+        //     try
+        //     {
+        //         List<Ingredient> ingredients = _ingServ.Get(recipeId);
+        //         return Ok(ingredients);
+        //     }
+        //     catch (System.Exception e)
+        //     {
+        //         return BadRequest(e.Message);
+        //     }
+        // }
 
         // POST
 
