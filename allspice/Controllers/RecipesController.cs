@@ -13,10 +13,12 @@ namespace allspice.Controllers
     public class RecipesController : ControllerBase
     {
         private readonly RecipesService _recServ;
+        private readonly IngredientsService _ingredientServ;
 
-        public RecipesController(RecipesService recServ)
+        public RecipesController(RecipesService recServ, IngredientsService ingredientServ)
         {
             _recServ = recServ;
+            _ingredientServ = ingredientServ;
         }
         [HttpGet]
         public ActionResult<List<Recipe>> Get()
@@ -47,6 +49,22 @@ namespace allspice.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        // GET INGREDIENTS BY RECIPE
+        [HttpGet("{id}/ingredients")]
+        public ActionResult<List<Ingredient>> GetIngredients(int id)
+        {
+            try
+            {
+                List<Ingredient> ingredients = _ingredientServ.GetIngredients(id);
+                return Ok(ingredients);
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         //POST
         [HttpPost]
         [Authorize]
@@ -57,7 +75,7 @@ namespace allspice.Controllers
                 Account userInfo = await HttpContext.GetUserInfoAsync<Account>();
                 recipeData.CreatorId = userInfo.Id;
                 Recipe recipe = _recServ.Create(recipeData);
-                recipe.CreatorId = userInfo.Id;
+                recipe.Creator = userInfo;
                 return Ok(recipe);
             }
             catch (System.Exception e)
@@ -77,7 +95,7 @@ namespace allspice.Controllers
             }
             catch (System.Exception e)
             {
-                return BadRequest(e);
+                return BadRequest(e.Message);
             }
         }
     }

@@ -46,5 +46,9 @@ namespace allspice.Services
             _repo.Delete(id);
         }
 
+        internal Ingredient GetIngredients(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

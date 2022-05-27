@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using allspice.Models;
 using Dapper;
-using System;
 
 namespace allspice.Repositories
 {
@@ -36,8 +35,8 @@ namespace allspice.Repositories
             r.*,
             acct.*
             FROM recipes r
-            JOIN accounts acct ON r.creatorId = acct.id;
-            ";
+            JOIN accounts acct ON r.creatorId = acct.id
+            WHERE r.id = @id";
             return _db.Query<Recipe, Account, Recipe>(sql, (recipe, account) =>
             {
                 recipe.CreatorId = account.Id;
@@ -51,7 +50,7 @@ namespace allspice.Repositories
            INSERT INTO recipes
            (picture, title, subtitle, category, creatorId)
            VALUES
-           (@picture, @title, @subtitle, @category, @creatorId);
+           (@Picture, @Title, @Subtitle, @Category, @CreatorId);
            SELECT LAST_INSERT_ID();
            ";
             recipeData.Id = _db.ExecuteScalar<int>(sql, recipeData);
@@ -60,7 +59,8 @@ namespace allspice.Repositories
 
         internal void Delete(int id)
         {
-            throw new NotImplementedException();
+            string sql = "DELETE FROM recipes WHERE id = @id LIMIT 1";
+            _db.Execute(sql, new { id });
         }
     }
 }

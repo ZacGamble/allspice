@@ -54,7 +54,7 @@ namespace allspice
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .WithOrigins(new string[]{
-                        "http://localhost:5000", "https://localhost:8081"
+                        "http://localhost:8080", "https://localhost:8081"
                     });
                 });
             });

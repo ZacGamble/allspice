@@ -21,7 +21,7 @@ namespace allspice.Repositories
 
         internal Account GetById(string id)
         {
-            string sql = "SELECT * FROM accounts WHERE id = @id";
+            string sql = "SELECT * FROM accounts WHERE id = @Id";
             return _db.QueryFirstOrDefault<Account>(sql, new { id });
         }
 

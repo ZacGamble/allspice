@@ -1,5 +1,12 @@
 <template>
   <span class="navbar-text">
+    <div
+      class="list-group-item list-group-item-action hoverable text-danger"
+      @click="logout"
+    >
+      <i class="mdi mdi-logout"></i>
+      logout
+    </div>
     <button
       class="btn selectable text-success lighten-30 text-uppercase my-2 my-lg-0"
       @click="login"

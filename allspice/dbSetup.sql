@@ -18,15 +18,21 @@ CREATE TABLE IF NOT EXISTS recipes(
 ) default charset utf8;
 
 CREATE TABLE IF NOT EXISTS ingredients(
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name TEXT COMMENT 'Ingredient name',
     quantity TEXT COMMENT 'Amount',
     recipeId INT COMMENT 'primary key',
-    FOREIGN KEY (recipeId) REFERENCES recipes(id) ON DELETE CASCADE
+    creatorId VARCHAR(255) NOT NULL,
+    FOREIGN KEY (recipeId) REFERENCES recipes(id) ON DELETE CASCADE,
+    FOREIGN KEY (creatorId) REFERENCES accounts(id) ON DELETE CASCADE
 ) DEFAULT charset utf8;
 
 CREATE TABLE IF NOT EXISTS steps(
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     position INT COMMENT 'Chronological order',
     body TEXT COMMENT 'Instructions',
     recipeId INT COMMENT 'primary key',
-    FOREIGN KEY (recipeId) REFERENCES recipes(id) ON DELETE CASCADE
+    creatorId VARCHAR(255) NOT NULL,
+    FOREIGN KEY (recipeId) REFERENCES recipes(id) ON DELETE CASCADE,
+    FOREIGN KEY (creatorId) REFERENCES accounts(id) ON DELETE CASCADE
 ) DEFAULT charset utf8;
