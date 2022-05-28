@@ -1,11 +1,16 @@
 <template>
-  <div class="about">
-    <h1>This is the about page</h1>
-  </div>
+  <div class="component"></div>
 </template>
+
 
 <script>
 export default {
-  name: 'AboutPage'
+  setup() {
+    return {}
+  }
 }
 </script>
+
+
+<style lang="scss" scoped>
+</style>
