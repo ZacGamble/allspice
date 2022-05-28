@@ -80,6 +80,7 @@ namespace allspice.Controllers
                 return BadRequest(e.Message);
             }
         }
+        //Get FAVORITES
 
         //POST
         [HttpPost]

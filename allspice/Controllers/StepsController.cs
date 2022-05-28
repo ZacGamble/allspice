@@ -71,5 +71,20 @@ namespace allspice.Controllers
             }
         }
         //DELETE
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<ActionResult<string>> Delete(int id)
+        {
+            try
+            {
+                Account userInfo = await HttpContext.GetUserInfoAsync<Account>();
+                _stepServ.Delete(id, userInfo.Id);
+                return Ok("Step Deleted");
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

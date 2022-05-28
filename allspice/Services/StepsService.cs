@@ -46,5 +46,14 @@ namespace allspice.Services
             return GetById(original.Id);
         }
 
+        internal void Delete(int id, string userId)
+        {
+            Step step = GetById(id);
+            if (step.CreatorId != userId)
+            {
+                throw new Exception("you do not own this ingredient");
+            }
+            _repo.Delete(id);
+        }
     }
 }
