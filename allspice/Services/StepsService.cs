@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using allspice.Models;
 using allspice.Repositories;
@@ -16,5 +17,34 @@ namespace allspice.Services
         {
             return _repo.GetStepsByRecipe(id);
         }
+
+        internal Step Create(Step stepData)
+        {
+            return _repo.Create(stepData);
+        }
+
+
+        internal Step GetById(int id)
+        {
+            Step step = _repo.GetById(id);
+            if (step == null)
+            {
+                throw new Exception("Invalid step ID");
+            }
+            return step;
+        }
+        internal Step Edit(Step stepData)
+        {
+            Step original = GetById(stepData.Id);
+            if (original.CreatorId != stepData.CreatorId)
+            {
+                throw new Exception("You do not have rights to change this step.");
+            }
+            original.Position = stepData.Position;
+            original.Body = stepData.Body ?? original.Body;
+            _repo.Edit(original);
+            return GetById(original.Id);
+        }
+
     }
 }
