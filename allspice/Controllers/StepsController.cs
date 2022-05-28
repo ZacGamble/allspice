@@ -1,12 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using allspice.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace allspice.Controllers
 {
-    public class StepsController
+    public class StepsController : ControllerBase
     {
-        
+        private readonly StepsService _stepServ;
+        public StepsController(StepsService stepServ)
+        {
+            _stepServ = stepServ;
+        }
+
+        //POST
+
+        //EDIT
+
+        //DELETE
     }
 }

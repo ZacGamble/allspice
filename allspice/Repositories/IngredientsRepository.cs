@@ -61,5 +61,17 @@ namespace allspice.Repositories
             ";
             return _db.Query<Ingredient>(sql, new { id }).FirstOrDefault();
         }
+
+        internal void Edit(Ingredient original)
+        {
+            string sql = @"
+            UPDATE ingredients
+            SET
+            name = @Name,
+            quantity = @Quantity
+            WHERE id = @Id;
+            ";
+            _db.Execute(sql, original);
+        }
     }
 }

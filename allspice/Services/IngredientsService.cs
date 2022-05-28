@@ -43,5 +43,18 @@ namespace allspice.Services
             }
             return ingredient;
         }
+
+        internal Ingredient Edit(Ingredient ingredientData)
+        {
+            Ingredient original = Get(ingredientData.Id);
+            if (original.CreatorId != ingredientData.CreatorId)
+            {
+                throw new Exception("you do not have rights to change this ingredient.");
+            }
+            original.Name = ingredientData.Name ?? original.Name;
+            original.Quantity = ingredientData.Quantity ?? original.Quantity;
+            _repo.Edit(original);
+            return Get(original.Id);
+        }
     }
 }

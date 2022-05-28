@@ -53,7 +53,23 @@ namespace allspice.Controllers
             }
         }
         // PUT
-
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<ActionResult<Ingredient>> Edit(int id, [FromBody] Ingredient ingredientData)
+        {
+            try
+            {
+                Account userInfo = await HttpContext.GetUserInfoAsync<Account>();
+                ingredientData.CreatorId = userInfo.Id;
+                ingredientData.Id = id;
+                Ingredient ingredient = _ingServ.Edit(ingredientData);
+                return Ok(ingredient);
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
         // DELETE
         [HttpDelete("{id}")]
         [Authorize]
