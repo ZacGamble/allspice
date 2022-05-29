@@ -8,9 +8,10 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12">
+      <div class="col-md-12">
         <div class="d-flex justify-content-center">
-          <div class="shadow rounded bg-gray p-3 fw-bolder position">
+          <div class="shadow rounded bg-gray p-2 fw-bolder position">
+            <span class="mx-3 selectable">Home</span>
             <span class="mx-3 selectable">My Recipes</span>
             <span class="mx-3 selectable">Favorites</span>
           </div>
@@ -24,15 +25,16 @@
 </template>
 
 <script>
-import { computed, onMounted } from '@vue/runtime-core'
+import { computed, onMounted, watchEffect } from '@vue/runtime-core'
 import { logger } from '../utils/Logger'
 import { recipesService } from '../services/RecipesService.js'
 import Pop from '../utils/Pop'
 import { AppState } from '../AppState'
+import Modal from '../components/Modal.vue'
 export default {
   name: 'Home',
   setup() {
-    onMounted(async () => {
+    watchEffect(async () => {
       try {
         await recipesService.getRecipes();
       } catch (error) {
