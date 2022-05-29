@@ -55,6 +55,7 @@
             class="p-1 my-2 rounded"
             type="text"
             minlength="3"
+            maxlength="18"
             placeholder="title..."
             required
             v-model="recipeForm.title"
@@ -63,6 +64,8 @@
             class="p-1 my-2 rounded"
             type="text"
             placeholder="subtitle..."
+            minlength="3"
+            maxlength="20"
             v-model="recipeForm.subtitle"
           />
           <select
