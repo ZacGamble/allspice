@@ -13,7 +13,14 @@ class RecipesService {
         const ingredientsRes = await api.get('api/recipes/' + id + '/ingredients');
         const stepsRes = await api.get('api/recipes/' + id + '/steps')
         AppState.activeIngredients = ingredientsRes.data
-        AppState.activeSteps = stepsRes.data        
+        AppState.activeSteps = stepsRes.data  
+        const isFave = AppState.favorites.find(f => f.recipeId == AppState.openRecipe.id)
+        if(isFave == undefined || isFave == null){
+            AppState.openFavorite = null;
+            return
+        }
+        AppState.openFavorite = isFave;
+        logger.log("AppState.openFavorite > ", AppState.openFavorite)
     }
     async getRecipesByCategory(category){
         const res = await api.get('api/recipes')

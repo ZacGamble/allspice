@@ -134,6 +134,7 @@ import { recipesService } from '../services/RecipesService.js'
 import Pop from '../utils/Pop'
 import { AppState } from '../AppState'
 import { Modal } from 'bootstrap'
+import RecipeVue from '../components/Recipe.vue'
 export default {
   setup() {
 
@@ -154,6 +155,8 @@ export default {
       recipeForm,
       selectFilter,
       activeRecipes: computed(() => AppState.activeRecipes),
+      openFavorite: computed(() => AppState.openFavorite),
+      favorites: computed(() => AppState.favorites),
 
       async handleSubmit() {
         try {
@@ -177,6 +180,17 @@ export default {
 
       },
 
+      async filterByFavorite() {
+        try {
+          //Look at all favorites and return only the recipes that have ID's matching the favorites' recipeIds
+          AppState.activeRecipes.filter(r => r.id == AppState.favorites.recipeId)
+          logger.log(AppState.activeRecipes, "The filtering of faves")
+        } catch (error) {
+          logger.error(error)
+          Pop.toast(error.message, 'error')
+        }
+      },
+
       async filterByNone() {
         try {
           await recipesService.getRecipes()
@@ -189,15 +203,6 @@ export default {
       async filterByOwned() {
         try {
           await recipesService.getRecipesIOwn()
-        } catch (error) {
-          logger.error(error)
-          Pop.toast(error.message, 'error')
-        }
-      },
-
-      async filterByFavorite() {
-        try {
-          await recipesService.filterByFavorite()
         } catch (error) {
           logger.error(error)
           Pop.toast(error.message, 'error')

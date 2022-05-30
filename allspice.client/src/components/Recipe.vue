@@ -3,7 +3,8 @@
     <div class="custom-card">
       <div class="p-2">
         <div class="category d-flex justify-content-between">
-          {{ recipe.category }} <i class="mdi mdi-heart-outline me-2 fs-4"></i>
+          {{ recipe.category }}
+          <!-- <i class="mdi mdi-heart-outline me-2 fs-4"></i> -->
         </div>
         <img
           @click="openRecipe()"
@@ -32,7 +33,10 @@
         <h3>
           {{ focusRecipe?.title }}
           <!-- TODO Swap instances based on isFavorite -->
-          <i class="mdi mdi-heart-outline me-2 fs-4 action text-danger"></i>
+          <i
+            v-if="openFavorite?.recipeId == focusRecipe?.id"
+            class="mdi mdi-heart-outline me-2 fs-4 action text-danger"
+          ></i>
         </h3>
         <h6>
           {{ focusRecipe?.subtitle }}
@@ -269,6 +273,7 @@ export default {
       accountId: computed(() => AppState.account.id),
       recipeId: computed(() => AppState.openRecipe.creatorId),
       selectedStep: computed(() => AppState.selectedStep),
+      openFavorite: computed(() => AppState.openFavorite),
       favorites: computed(() => AppState.favorites),
 
       async handleStepSubmit() {
@@ -283,7 +288,6 @@ export default {
           Pop.toast(error.message, 'error')
         }
       },
-
 
       async handleIngredientSubmit() {
         try {
