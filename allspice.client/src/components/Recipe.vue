@@ -2,7 +2,9 @@
   <div class="col-sm-4 p-2">
     <div class="custom-card">
       <div class="p-2">
-        <div class="category">{{ recipe.category }}</div>
+        <div class="category d-flex justify-content-between">
+          {{ recipe.category }} <i class="mdi mdi-heart-outline me-2 fs-4"></i>
+        </div>
         <img
           @click="openRecipe()"
           class="img-fluid rounded action"
@@ -16,10 +18,6 @@
           <h2>
             {{ recipe.title }}
           </h2>
-          <i
-            v-show="recipe.creatorId == accountId"
-            class="mdi mdi-pencil action pop"
-          ></i>
         </div>
         <div class="d-flex justify-content-between">
           <h5>{{ recipe.subtitle }}</h5>
@@ -33,10 +31,20 @@
       <div class="d-flex flex-column">
         <h3>
           {{ focusRecipe?.title }}
+          <!-- TODO Swap instances based on isFavorite -->
+          <i class="mdi mdi-heart-outline me-2 fs-4 action"></i>
+          <i class="mdi mdi-heart-outline me-2 fs-4 action"></i>
         </h3>
         <h6>
           {{ focusRecipe?.subtitle }}
         </h6>
+        <i
+          v-show="recipe.creatorId == accountId"
+          class="mdi mdi-pencil action pop fs-3"
+          title="edit recipe"
+          @click="editRecipeModal()"
+          >Edit Recipe</i
+        >
       </div>
       <button
         @click="deleteRecipe()"
@@ -73,7 +81,7 @@
           <div class="col-5">
             <h6>
               <button
-                @click="modifyIngredients()"
+                @click="createIngredients()"
                 title="click to add"
                 class="btn btn-success"
               >
@@ -100,17 +108,86 @@
       </div>
     </template>
     <template #modal-footer-slot>
-      <button
-        @click="closeModal()"
-        type="button"
-        class="btn btn-secondary"
-        data-dismiss="open-recipe-modal"
-      >
-        Close
-      </button>
+      <div class="d-flex justify-content-between">
+        <button
+          v-if="selectedStep"
+          class="btn btn-success"
+          @click="openStepEditModal()"
+        >
+          Edit selected
+        </button>
+        <button
+          @click="closeModal()"
+          type="button"
+          class="btn btn-secondary"
+          data-dismiss="open-recipe-modal"
+        >
+          Close
+        </button>
+      </div>
     </template>
   </Modal>
   <!-- #endregion -->
+
+  <!-- Edit Recipe Modal -->
+  <Modal id="edit-recipe-form">
+    <template #modal-header-slot>
+      <span class="fs-2 fw-bold">Edit your recipe!</span>
+    </template>
+    <template #modal-body-slot>
+      <form @submit.prevent="editRecipe()">
+        <div class="d-flex flex-column">
+          <input
+            class="p-1 my-2 rounded"
+            type="text"
+            minlength="3"
+            maxlength="18"
+            placeholder="title..."
+            required
+            v-model="recipeForm.title"
+          />
+          <input
+            class="p-1 my-2 rounded"
+            type="text"
+            placeholder="subtitle..."
+            minlength="3"
+            maxlength="20"
+            v-model="recipeForm.subtitle"
+          />
+          <select
+            name="category"
+            class="p-1 my-2 rounded"
+            minlength="3"
+            placeholder="category..."
+            required
+            v-model="recipeForm.category"
+          >
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner" selected>Dinner</option>
+            <option value="dessert">Dessert</option>
+          </select>
+          <input
+            class="p-1 my-2 rounded"
+            type="url"
+            placeholder="Image URL..."
+            v-model="recipeForm.picture"
+          />
+        </div>
+        <button type="submit" class="btn btn-info">Submit</button>
+      </form>
+      <div class="d-flex justify-content-end">
+        <button
+          @click="closeModal()"
+          type="button"
+          class="btn btn-secondary"
+          data-dismiss="open-recipe-modal"
+        >
+          Close
+        </button>
+      </div>
+    </template>
+  </Modal>
 
   <!-- Enter new Steps -->
   <Modal id="create-step">
@@ -119,18 +196,20 @@
       <form @submit.prevent="handleStepSubmit()">
         <div class="d-flex flex-column">
           <input
+            class="mb-2 rounded p-2 border"
             type="number"
             placeholder="Which step in the recipe?"
             v-model="stepForm.position"
           />
           <input
+            class="mb-2 rounded p-2 border"
             type="text"
             placeholder="Your instructions..."
             v-model="stepForm.body"
             minlength="5"
             required
           />
-          <button class="btn success" type="submit">Submit</button>
+          <button class="btn btn-success" type="submit">Submit</button>
         </div>
       </form>
     </template>
@@ -153,7 +232,9 @@
             v-model="ingredientForm.quantity"
             class="my-2 rounded p-2"
           />
-          <button class="btn btn-success" type="submit">Submit</button>
+          <button class="btn btn-success" type="submit" title="submit">
+            Submit
+          </button>
         </div>
       </form></template
     >
@@ -168,6 +249,7 @@ import { recipesService } from '../services/RecipesService'
 import { logger } from '../utils/Logger'
 import Pop from '../utils/Pop'
 import { computed, ref } from '@vue/reactivity'
+import Stepsvue from './Steps.vue'
 export default {
   props: {
     recipe: {
@@ -180,12 +262,15 @@ export default {
 
     const stepForm = ref({})
     const ingredientForm = ref({})
+    const recipeForm = ref({})
     return {
       stepForm,
       ingredientForm,
+      recipeForm,
       user: computed(() => AppState.user),
       accountId: computed(() => AppState.account.id),
       recipeId: computed(() => AppState.openRecipe.creatorId),
+      selectedStep: computed(() => AppState.selectedStep),
 
       async handleStepSubmit() {
         try {
@@ -198,6 +283,11 @@ export default {
           logger.error(error)
           Pop.toast(error.message, 'error')
         }
+      },
+
+      async openStepEditModal() {
+        Modal.getOrCreateInstance(document.getElementById('open-recipe-modal')).hide()
+        Modal.getOrCreateInstance(document.getElementById(`edit-step-modal`)).show()
       },
 
       async handleIngredientSubmit() {
@@ -220,6 +310,18 @@ export default {
       async createIngredients() {
         Modal.getOrCreateInstance(document.getElementById('open-recipe-modal')).hide()
         Modal.getOrCreateInstance(document.getElementById('create-ingredients')).show()
+      },
+      editRecipeModal() {
+        Modal.getOrCreateInstance(document.getElementById('edit-recipe-form')).show();
+      },
+
+      async editRecipe() {
+        try {
+          await recipesService.editRecipe(recipeForm.value)
+        } catch (error) {
+          logger.error(error)
+          Pop.toast(error.message, 'error')
+        }
       },
 
       async deleteRecipe(theRecipe) {

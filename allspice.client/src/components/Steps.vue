@@ -1,5 +1,5 @@
 <template>
-  <p class="stepStyle action">
+  <p class="stepStyle action" @click="selectStep()" title="click to select">
     {{ steps?.position }} - {{ steps?.body }}
     <i
       v-show="account.id == steps.creatorId"
@@ -9,7 +9,7 @@
     ></i>
   </p>
   <!-- Edit steps -->
-  <Modal id="edit-step">
+  <Modal id="edit-step-modal">
     <template #modal-header-slot>Change your instructions here</template>
     <template #modal-body-slot>
       <form @submit.prevent="handleStepEdit()">
@@ -38,6 +38,7 @@ import { Modal } from 'bootstrap'
 import { logger } from '../utils/Logger'
 import Pop from '../utils/Pop'
 import { recipesService } from '../services/RecipesService'
+import RecipeVue from './Recipe.vue'
 export default {
   props: {
     steps: {
@@ -54,8 +55,11 @@ export default {
       account: computed(() => AppState.account),
 
       openEdit() {
-        Modal.getOrCreateInstance(document.getElementById('open-recipe-modal')).hide()
-        Modal.getOrCreateInstance(document.getElementById('edit-step')).show()
+
+      },
+      selectStep() {
+        AppState.selectedStep = props.steps;
+        logger.log(AppState.selectedStep)
       },
       async handleStepEdit() {
         try {
@@ -73,7 +77,9 @@ export default {
         try {
           AppState.selectedStep = props.steps
           logger.log(AppState.selectedStep)
-          await recipesService.deleteStep()
+          if (await Pop.confirm()) {
+            await recipesService.deleteStep()
+          }
         } catch (error) {
           logger.error(error)
           Pop.toast(error.message, 'error')

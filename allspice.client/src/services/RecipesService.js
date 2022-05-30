@@ -21,6 +21,13 @@ class RecipesService {
         const res = await api.post('api/recipes', formData);
         AppState.activeRecipes = [res.data, ...AppState.activeRecipes];
     }
+    async editRecipe(formData){
+        const recipeId = AppState.openRecipe.id
+        formData.id = AppState.openRecipe.id
+        formData.creatorId = AppState.openRecipe.creatorId
+        const res = await api.put('api/recipes/' + recipeId, formData)
+        AppState.openRecipe = AppState.openRecipe
+    }
     async deleteRecipe(recipeId){
         const res = await api.delete('api/recipes/' + recipeId);
         const index = AppState.activeRecipes.findIndex(i => i.id == recipeId);
@@ -41,6 +48,8 @@ class RecipesService {
         const index = AppState.activeIngredients.findIndex(i => i.id == id);
         AppState.activeIngredients.splice(index, 1);
     }
+    // #endregion
+
     // #region Step actions
     async submitNewStep(formData){
         formData.creatorId = AppState.openRecipe.creatorId
@@ -61,6 +70,7 @@ class RecipesService {
        const index = AppState.activeSteps.findIndex(i => i.id == id);
         AppState.activeSteps.splice(index, 1);
     }
+    // #endregion steps
 }
 
 export const recipesService = new RecipesService();

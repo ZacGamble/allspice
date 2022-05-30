@@ -5,6 +5,7 @@ export const AppState = reactive({
   user: {},
   account: {},
   activeRecipes: [],
+  backupRecipes: [],
   openRecipe: null,
   activeIngredients: {},
   selectedIngredient: null,

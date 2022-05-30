@@ -3,9 +3,31 @@
   <div class="container-fluid">
     <div class="row bg-img">
       <div class="col-md-12 text-color">
-        <button @click="openRecipeForm()" class="btn btn-warning mt-3">
-          Submit Recipe
-        </button>
+        <div class="d-flex justify-content-between">
+          <div>
+            <button @click="openRecipeForm()" class="btn btn-warning mt-3">
+              Submit Recipe
+            </button>
+          </div>
+          <form class="m-2 p-2" @submit.prevent="filterByCategory(category)">
+            <div>
+              <label for="categories" class="mx-2">Filter by category!</label>
+            </div>
+            <div class="d-flex flex-column">
+              <select
+                name="categories"
+                id="categorySelect"
+                v-model="selectFilter.category"
+              >
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="dessert">Dessert</option>
+              </select>
+              <button class="btn btn-info">Go!</button>
+            </div>
+          </form>
+        </div>
         <h1 class="my-5 p-3 text-center fw-bolder">ALLSPICE</h1>
         <div class="text-center mb-5">
           <h4>
@@ -105,7 +127,7 @@
 </template>
 
 <script>
-import { computed, onMounted, ref, watchEffect } from '@vue/runtime-core'
+import { computed, onMounted, ref, watch, watchEffect } from '@vue/runtime-core'
 import { logger } from '../utils/Logger'
 import { recipesService } from '../services/RecipesService.js'
 import Pop from '../utils/Pop'
@@ -115,6 +137,7 @@ export default {
   setup() {
 
     const recipeForm = ref({});
+    const selectFilter = ref({})
 
     watchEffect(async () => {
       try {
@@ -126,17 +149,26 @@ export default {
     })
     return {
       recipeForm,
+      selectFilter,
       activeRecipes: computed(() => AppState.activeRecipes),
 
       async handleSubmit() {
         try {
           await recipesService.createRecipe(recipeForm.value);
-          this.closeModal();
+          Modal.getOrCreateInstance(document.getElementById('recipe-form')).hide()
           Pop.toast("Recipe posted!", 'success')
         } catch (error) {
           logger.error(error)
           Pop.toast(error.message, 'error')
         }
+      },
+
+      filterByCategory() {
+        const category = selectFilter.value
+        debugger
+        AppState.backupRecipes = AppState.activeRecipes
+        AppState.activeRecipes.filter(r => r.category === category)
+        logger.log(AppState.activeRecipes)
       },
 
       async filterByNone() {
