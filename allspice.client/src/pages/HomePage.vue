@@ -17,12 +17,13 @@
               <select
                 name="categories"
                 id="categorySelect"
+                required
                 v-model="selectFilter.category"
               >
                 <option value="breakfast">Breakfast</option>
                 <option value="lunch">Lunch</option>
                 <option value="dinner">Dinner</option>
-                <option value="dessert">Dessert</option>
+                <option value="dessert" selected>Dessert</option>
               </select>
               <button class="btn btn-info">Go!</button>
             </div>
@@ -142,10 +143,12 @@ export default {
     watchEffect(async () => {
       try {
         await recipesService.getRecipes();
+        await recipesService.getFavorites();
       } catch (error) {
         logger.error(error)
         Pop.toast(error.message, 'error')
       }
+
     })
     return {
       recipeForm,
@@ -163,17 +166,20 @@ export default {
         }
       },
 
-      filterByCategory() {
+      async filterByCategory() {
         const category = selectFilter.value
-        debugger
-        AppState.backupRecipes = AppState.activeRecipes
-        AppState.activeRecipes.filter(r => r.category === category)
-        logger.log(AppState.activeRecipes)
+        try {
+          await recipesService.getRecipesByCategory(category)
+        } catch (error) {
+          logger.error(error)
+          Pop.toast(error.message, 'error')
+        }
+
       },
 
       async filterByNone() {
         try {
-          recipesService.filterByNone()
+          await recipesService.getRecipes()
         } catch (error) {
           logger.error(error)
           Pop.toast(error.message, 'error')
@@ -182,7 +188,7 @@ export default {
 
       async filterByOwned() {
         try {
-          recipesService.filterByOwned()
+          await recipesService.getRecipesIOwn()
         } catch (error) {
           logger.error(error)
           Pop.toast(error.message, 'error')
@@ -191,7 +197,7 @@ export default {
 
       async filterByFavorite() {
         try {
-          recipesService.filterByFavorite()
+          await recipesService.filterByFavorite()
         } catch (error) {
           logger.error(error)
           Pop.toast(error.message, 'error')

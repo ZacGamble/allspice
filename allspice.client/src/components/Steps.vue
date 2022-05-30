@@ -1,5 +1,10 @@
 <template>
-  <p class="stepStyle action" @click="selectStep()" title="click to select">
+  <p
+    class="stepStyle action"
+    @click="selectStep()"
+    title="click to select"
+    data-toggle="dropdown"
+  >
     {{ steps?.position }} - {{ steps?.body }}
     <i
       v-show="account.id == steps.creatorId"
@@ -8,6 +13,11 @@
       @click="deleteStep()"
     ></i>
   </p>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="#">Action</a>
+    <a class="dropdown-item" href="#">Another action</a>
+    <a class="dropdown-item" href="#">Something else here</a>
+  </div>
   <!-- Edit steps -->
   <Modal id="edit-step-modal">
     <template #modal-header-slot>Change your instructions here</template>

@@ -13,9 +13,22 @@ class RecipesService {
         const ingredientsRes = await api.get('api/recipes/' + id + '/ingredients');
         const stepsRes = await api.get('api/recipes/' + id + '/steps')
         AppState.activeIngredients = ingredientsRes.data
-        logger.log("RecipesService > active ingredients", AppState.activeIngredients)
-        AppState.activeSteps = stepsRes.data
-        logger.log("RecipesService > active Steps", AppState.activeSteps)
+        AppState.activeSteps = stepsRes.data        
+    }
+    async getRecipesByCategory(category){
+        const res = await api.get('api/recipes')
+        AppState.activeRecipes = res.data.filter(r => r.category == category.category)
+        logger.log(AppState.activeRecipes)
+    }
+    async getRecipesIOwn(){
+        const res = await api.get('api/recipes')
+        AppState.activeRecipes = res.data.filter(r => r.creatorId == AppState.account.id)
+    }
+    async filterByFavorite(){
+        const res = await api.get('api/recipes')
+        const favoriteRecipes = AppState.favorites.filter(f => f.accountId == AppState.activeRecipes.creatorId)
+        debugger
+        AppState.activeRecipes = res.data.filter(r => r.id == favoriteRecipes.recipeId)
     }
     async createRecipe(formData){
         const res = await api.post('api/recipes', formData);
@@ -71,6 +84,13 @@ class RecipesService {
         AppState.activeSteps.splice(index, 1);
     }
     // #endregion steps
+
+    // Favorite Actions
+    async getFavorites(){
+        const res = await api.get('accounts/favorites');
+        AppState.favorites = res.data
+        logger.log("favorites > ", AppState.favorites);
+    }
 }
 
 export const recipesService = new RecipesService();

@@ -25,26 +25,25 @@
       </div>
     </div>
   </div>
-  <!-- #region recipe modal -->
+  <!-- #region main recipe modal -->
   <Modal id="open-recipe-modal">
     <template #modal-header-slot>
       <div class="d-flex flex-column">
         <h3>
           {{ focusRecipe?.title }}
           <!-- TODO Swap instances based on isFavorite -->
-          <i class="mdi mdi-heart-outline me-2 fs-4 action"></i>
-          <i class="mdi mdi-heart-outline me-2 fs-4 action"></i>
+          <i class="mdi mdi-heart-outline me-2 fs-4 action text-danger"></i>
         </h3>
         <h6>
           {{ focusRecipe?.subtitle }}
         </h6>
-        <i
+        <!-- <i
           v-show="recipe.creatorId == accountId"
           class="mdi mdi-pencil action pop fs-3"
           title="edit recipe"
           @click="editRecipeModal()"
           >Edit Recipe</i
-        >
+        > -->
       </div>
       <button
         @click="deleteRecipe()"
@@ -89,13 +88,7 @@
               </button>
               Ingredients
             </h6>
-            <div
-              v-show="recipe.creatorId == accountId"
-              class="mdi mdi-pencil-outline pop fs-5 action"
-              title="edit ingredients"
-            >
-              Edit
-            </div>
+
             <ul>
               <Ingredients
                 v-for="i in activeIngredients"
@@ -250,6 +243,7 @@ import { logger } from '../utils/Logger'
 import Pop from '../utils/Pop'
 import { computed, ref } from '@vue/reactivity'
 import Stepsvue from './Steps.vue'
+import { watchEffect } from '@vue/runtime-core'
 export default {
   props: {
     recipe: {
@@ -259,6 +253,10 @@ export default {
   },
 
   setup(props) {
+
+    watchEffect(() => {
+
+    })
 
     const stepForm = ref({})
     const ingredientForm = ref({})
@@ -271,6 +269,7 @@ export default {
       accountId: computed(() => AppState.account.id),
       recipeId: computed(() => AppState.openRecipe.creatorId),
       selectedStep: computed(() => AppState.selectedStep),
+      favorites: computed(() => AppState.favorites),
 
       async handleStepSubmit() {
         try {
@@ -285,10 +284,6 @@ export default {
         }
       },
 
-      async openStepEditModal() {
-        Modal.getOrCreateInstance(document.getElementById('open-recipe-modal')).hide()
-        Modal.getOrCreateInstance(document.getElementById(`edit-step-modal`)).show()
-      },
 
       async handleIngredientSubmit() {
         try {
@@ -307,6 +302,10 @@ export default {
         Modal.getOrCreateInstance(document.getElementById('create-step')).show()
       },
 
+      async openStepEditModal() {
+        Modal.getOrCreateInstance(document.getElementById('open-recipe-modal')).hide()
+        Modal.getOrCreateInstance(document.getElementById(`edit-step-modal`)).show()
+      },
       async createIngredients() {
         Modal.getOrCreateInstance(document.getElementById('open-recipe-modal')).hide()
         Modal.getOrCreateInstance(document.getElementById('create-ingredients')).show()
@@ -343,10 +342,11 @@ export default {
         try {
 
           AppState.openRecipe = props.recipe;
+          const favoriteState = AppState.favorites.find(f => f.recipeId == AppState.openRecipe.id)
           await recipesService.getRecipeDetails(AppState.openRecipe.id);
           Modal.getOrCreateInstance(document.getElementById('open-recipe-modal')).show()
-
           logger.log("Recipe component > Appstate.openRecipe", AppState.openRecipe)
+          return favoriteState;
         } catch (error) {
           logger.error(error)
           Pop.toast(error.message, 'error')

@@ -5,7 +5,7 @@ namespace allspice.Models
         public int Id { get; set; }
         public int RecipeId { get; set; }
         public string AccountId { get; set; }
-        public bool isFavorite { get; set; }
+        public bool IsFavorite { get; set; }
 
     }
 }
